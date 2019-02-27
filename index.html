@@ -1,0 +1,80 @@
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7">
+<html>
+
+<head>
+    <style>
+        #caretposition {
+    font-weight: bold;
+    }
+   </style>
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script type="text/javascript">
+        function getCaretPosition(editableDiv) {
+            var caretPos = 0,
+                sel, range;
+            if (window.getSelection) {
+                sel = window.getSelection();
+                if (sel.rangeCount) {
+                    range = sel.getRangeAt(0);
+                    if (range.commonAncestorContainer.parentNode == editableDiv) {
+                        caretPos = range.endOffset;
+                    }
+                }
+            } else if (document.selection && document.selection.createRange) {
+                range = document.selection.createRange();
+                if (range.parentElement() == editableDiv) {
+                    var tempEl = document.createElement("span");
+                    editableDiv.insertBefore(tempEl, editableDiv.firstChild);
+                    var tempRange = range.duplicate();
+                    tempRange.moveToElementText(tempEl);
+                    tempRange.setEndPoint("EndToEnd", range);
+                    caretPos = tempRange.text.length;
+                }
+            }
+            return caretPos;
+        }
+
+        function alertdiv() {
+            alert(document.getElementById('contentbox').innerHTML);
+        }
+        $(document).ready(function() {
+            $('#jBold').click(function() {
+                document.execCommand('bold');
+                alert(document.getElementById('contentbox').innerHTML)
+            });
+        });
+
+        function insertTextAtCursor(text) {
+            document.getElementById('contentbox').focus();
+            var sel, range, html;
+            if (window.getSelection) {
+                sel = window.getSelection();
+                if (sel.getRangeAt && sel.rangeCount) {
+                    range = sel.getRangeAt(0);
+                    range.deleteContents();
+                    range.insertNode(document.createTextNode(text));
+                }
+            } else if (document.selection && document.selection.createRange) {
+                document.selection.createRange().text = text;
+            }
+        }
+
+    </script>
+</head>
+
+<body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <div id="contentbox" contenteditable="true">Click me and move cursor with keys or mouse</div>
+    <div id="caretposition">0</div>
+    <button id="jBold" onclick="">show</button>
+    <button id="btn2" onclick="insertTextAtCursor('dheeraj')">insert</button>
+    <script>
+        var update = function() {
+            $('#caretposition').html(getCaretPosition(this));
+        };
+        $('#contentbox').on("mousedown mouseup keydown keyup", update);
+
+    </script>
+</body>
+
+</html>
